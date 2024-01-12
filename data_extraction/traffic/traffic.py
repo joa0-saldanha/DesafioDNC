@@ -39,7 +39,23 @@ def get_routes():
 
     return get_traffic(routes)
 
-def get_traffic(routes):
+def get_traffic(routes: list):
+
+    print("Getting TRAFFIC information!")
+    
+    for route in routes:
+
+        url_call = f"https://api.tomtom.com/routing/1/calculateRoute/{route['origin'][0]},{route['origin'][1]}:{route['destination'][0]},{route['destination'][1]}/json?key={cons.API_KEY}"
+
+        try:
+            route['info'] = get(url_call).json()['routes'][0]["summary"]
+
+        except Exception as e:
+            raise e
+
+    return insert_traffic(routes)
+
+def insert_traffic(routes: list):
 
     print("Inserting TRAFFIC information into the DATABASE!")
 
@@ -50,20 +66,13 @@ def get_traffic(routes):
     
     for route in routes:
 
-        url_call = f"https://api.tomtom.com/routing/1/calculateRoute/{route['origin'][0]},{route['origin'][1]}:{route['destination'][0]},{route['destination'][1]}/json?key={cons.API_KEY}"
-
-        try:
-            info = get(url_call).json()['routes'][0]["summary"]
-        except Exception as e:
-            raise e
-
         cursor = connection.cursor()
 
         cursor.execute(f"""
                 INSERT INTO "public"."traffic"
                 (route, distance_in_meters, departure_time, arrival_time, travel_time_in_seconds, traffic_delay_in_seconds, traffic_distance_in_meters)
                 VALUES 
-                ({route['id']}, '{info['lengthInMeters']}', '{info['departureTime']}', '{info['arrivalTime']}', {info['travelTimeInSeconds']}, {info['trafficDelayInSeconds']}, {info['trafficLengthInMeters']}) 
+                ({route['id']}, '{route['info']['lengthInMeters']}', '{route['info']['departureTime']}', '{route['info']['arrivalTime']}', {route['info']['travelTimeInSeconds']}, {route['info']['trafficDelayInSeconds']}, {route['info']['trafficLengthInMeters']}) 
                 """)
         
         connection.commit()
