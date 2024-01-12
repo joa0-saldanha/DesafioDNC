@@ -7,7 +7,7 @@ steps:
   - forecast
   - --region=us-central1
   - --entry-point=forecast
-  - --source=./data_extraction/forecast/
+  - --source=./data_extraction/forecast
   - --trigger-http
   - --runtime=python39
   - --timeout=540s
