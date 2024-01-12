@@ -5,6 +5,12 @@ from datetime import datetime
 import constants as cons
 
 def get_citys():
+    """
+        Retrieves city information from the database.
+
+        Returns:
+            list: List of dictionaries representing cities with their IDs, latitudes, and longitudes.
+    """
     print("Getting CITIES!")
     
     try:
@@ -19,6 +25,12 @@ def get_citys():
         raise e
 
 def get_forecast(citys):
+    """
+        Retrieves forecast information for each city using the OpenWeatherMap API.
+
+        Parameters:
+            citys (list): List of dictionaries representing cities.
+    """
     print('Getting FORECAST!')
 
     for city in citys:
@@ -43,6 +55,15 @@ def get_forecast(citys):
     return insert_forecast(citys)
 
 def insert_forecast(citys):
+    """
+        Inserts forecast information into the database for each city.
+
+        Parameters:
+            citys (list): List of dictionaries representing cities with forecast information.
+
+        Returns:
+            str: String indicating the success of the operation.
+    """
     print("Inserting FORECAST to the DATABASE!")
 
     try:
@@ -63,6 +84,17 @@ def insert_forecast(citys):
         raise e
 
 def forecast(request):
+    """
+        Acts as an entry point for fetching forecast-related information.
+        Determines the type of request and triggers the appropriate actions.
+
+        Parameters:
+            request (str): Type of request, should be 'get_forecast'.
+
+        Returns:
+            - If the request is 'get_forecast', it returns the forecast information.
+            - Otherwise, it returns 'Invalid request!'.
+    """
     if request == 'get_forecast':
         return get_citys()
     else:
