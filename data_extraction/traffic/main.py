@@ -109,7 +109,11 @@ def traffic(request):
             - If the request is 'get_traffic', it returns the traffic information.
             - Otherwise, it returns 'Invalid request!'.
     """
-    if request == 'get_traffic':
+    request_json = request.get_json(silent=True)
+
+    task = request_json['task']
+
+    if task == 'get_traffic':
         return get_routes()
     else:
         return 'Invalid request!'
