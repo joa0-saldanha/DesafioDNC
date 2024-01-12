@@ -1,20 +1,15 @@
 from requests import post, get
-import psycopg2
+import psycopg2 as psy
 from datetime import datetime
 
 import constants as cons
 
-def check_datebase(city: str):
+def get_citys():
 
-    if not isinstance(city, str):
-        raise TypeError("O nome da cidade deve ser uma string")
-
-    if city == "":
-        raise ValueError("O nome da cidade não pode ser vazio")
-
+    print("Getting CITYS!")
 
     try:
-        connection = psycopg2.connect(cons.CONNECTION_STRING)
+        connection = psy.connect(cons.CONNECTION_STRING)
 
     except Exception as e:
         raise e
@@ -25,111 +20,84 @@ def check_datebase(city: str):
                    id,
                    latitude,
                    longitude
-                FROM "public"."city" 
-                WHERE LOWER(name) = LOWER('{city}') """)
-    
-    city_info = cursor.fetchall()
+                FROM "public"."city"
+                   """)
 
+    citys = [{
+            'id': route[0],
+            'lat': (route[1]),
+            'lon': (route[2])
+        } for route in cursor.fetchall()]
+    
     cursor.close()
     connection.close()
 
-    id, lat, lon = city_info[0] if len(city_info) > 0 else get_coordinates(city)
+    return get_forecast(citys)
 
-    return get_forecast({
-        "id": id,
-        "lat": lat,
-        "lon": lon
-    }) if lat != 0 and lon != 0 else 'City Not Found'
+def get_forecast(citys: list):
 
-    
-def get_coordinates(city: str):
+    print('Getting FORECAST!')
 
-    print('Getting Coordinates')
+    for city in citys:
 
-    url_call = cons.COORDINATES_URL + city
-
-    try:
-        infos = get(url_call).json()
-
-    except Exception as e:
-        raise e
-    
-    if 'results' in infos:
-
-        city_infos = infos['results'][0]
+        url_call = cons.FORECAST_URL + f"latitude={city['lat']}&longitude={city['lon']}"
 
         try:
-            connection = psycopg2.connect(cons.CONNECTION_STRING)
-            
+            forecast = get(url_call).json()
+
+            city['forecast'] = [
+                    {
+                        "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
+                        "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
+                        "temperature": forecast['hourly']['temperature_2m'][i],
+                        "humidity": forecast['hourly']['relative_humidity_2m'][i],
+                        "precipitation": forecast['hourly']['precipitation'][i]
+                    } 
+                    for i in range(0,24)
+            ]
+
         except Exception as e:
             raise e
 
-        cursor = connection.cursor()
-        cursor.execute(f"""
-                    INSERT INTO "public"."city"
-                    (id, name, country_code, latitude, longitude)
-                    VALUES 
-                    ({city_infos['id']}, '{city_infos['name']}', '{city_infos['country_code']}', {city_infos['latitude']}, {city_infos['longitude']}) 
-                    """)
+    return insert_forecast(citys)
 
-        connection.commit()
-        cursor.close()
-        connection.close()
+def insert_forecast(citys: list):
 
-        return (city_infos['id'], city_infos['latitude'], city_infos['longitude'])
-    
-    else:
-
-        return (0, 0, 0)
-    
-def get_forecast(coordinates: dict):
-
-    print('Getting Forecast')
-
-    url_call = cons.FORECAST_URL + f"latitude={coordinates['lat']}&longitude={coordinates['lon']}"
+    print("Inserting FORECAST to the DATABASE!")
 
     try:
-        forecast = get(url_call).json()
-
-    except Exception as e:
-        raise e
-
-    forecasts = [
-        {
-            "id": datetime.strptime(forecast['hourly']['time'][i], "%Y-%m-%dT%H:%M").strftime("%Y%m%d%H%M"),
-            "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
-            "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
-            "temperature": forecast['hourly']['temperature_2m'][i],
-            "humidity": forecast['hourly']['relative_humidity_2m'][i],
-            "precipitation": forecast['hourly']['rain'][i]
-        } 
-        for i in range(0,24)
-    ]
-
-    return insert_forecast(forecasts, coordinates['id'])
-
-def insert_forecast(forecasts: list, city_id: int):
-
-    print("Inserting Forecasts to the Database")
-
-    try:
-        connection = psycopg2.connect(cons.CONNECTION_STRING)
+        connection = psy.connect(cons.CONNECTION_STRING)
         
     except Exception as e:
         raise e
 
     cursor = connection.cursor()
 
-    for forescast in forecasts:
+    for city in citys:
 
-        cursor.execute(f"""
-                    INSERT INTO "public"."climate"
-                    (date, hour, city, temperature, humidity, precipitation)
-                    VALUES 
-                    ('{forescast['date']}', '{forescast['hour']}', {city_id}, {forescast['temperature']}, {forescast['humidity']}, {forescast['precipitation']}) 
-                    """)
-        
-        connection.commit()
+        for forecast in city['forecast']:
+
+            cursor.execute(f"""
+                        INSERT INTO "public"."climate"
+                        (date, hour, city, temperature, humidity, precipitation)
+                        VALUES 
+                        ('{forecast['date']}', '{forecast['hour']}', {city['id']}, {forecast['temperature']}, {forecast['humidity']}, {forecast['precipitation']}) 
+                        """)
+            
+            connection.commit()
 
     cursor.close()
     connection.close()
+
+
+    return 'Ok'
+
+
+def forecast(request):
+
+    if request == 'get_forecast':
+
+        return get_citys()    
+    else:
+
+        return 'Invalid request!'
