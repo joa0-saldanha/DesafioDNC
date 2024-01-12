@@ -7,5 +7,4 @@ DB_DATABASE = os.environ.get('DB_DATABASE')
 
 CONNECTION_STRING = f"host={DB_HOSTNAME} user={DB_USERNAME} password={DB_PASSWORD} dbname={DB_DATABASE}"
 
-
 COORDINATES_URL = f"https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name="
