@@ -5,6 +5,13 @@ import json
 import constants as cons
 
 def get_routes():
+    """
+        Retrieves route information from the database and prepares the data for fetching traffic information.
+
+        Returns:
+            list: List of dictionaries representing routes, including origin and destination coordinates.
+    """
+
     print("Getting ROUTES information!")
 
     try:
@@ -31,6 +38,16 @@ def get_routes():
         raise e
 
 def get_traffic(routes: list):
+    """
+        Retrieves traffic information for each route using the TomTom API.
+
+        Parameters:
+            routes (list): List of dictionaries representing routes.
+
+        Returns:
+            None
+    """
+
     print("Getting TRAFFIC information!")
 
     for route in routes:
@@ -45,6 +62,15 @@ def get_traffic(routes: list):
     return insert_traffic(routes)
 
 def insert_traffic(routes: list):
+    """
+        Inserts traffic information into the database for each route.
+
+        Parameters:
+            routes (list): List of dictionaries representing routes with traffic information.
+
+        Returns:
+            str: String indicating the success of the operation.
+    """
     print("Inserting TRAFFIC information into the DATABASE!")
 
     try:
@@ -72,6 +98,17 @@ def insert_traffic(routes: list):
         raise e
 
 def traffic(request):
+    """
+        Acts as an entry point for fetching traffic-related information. 
+        Determines the type of request and triggers the appropriate actions.
+
+        Parameters:
+            request (str): Type of request, should be 'get_traffic'.
+
+        Returns:
+            - If the request is 'get_traffic', it returns the traffic information.
+            - Otherwise, it returns 'Invalid request!'.
+    """
     if request == 'get_traffic':
         return get_routes()
     else:
