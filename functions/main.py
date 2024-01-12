@@ -111,6 +111,8 @@ def insert(request):
             - If the request is 'route', it returns a message indicating the success of the route insertion.
             - Otherwise, it returns "Invalid REQUEST!".
     """
+    request = request.get_json(silent=True)
+
     if request['request'] == 'city':
         return insert_city(request['city'])
     elif request['request'] == 'route':
