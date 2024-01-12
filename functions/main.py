@@ -4,6 +4,15 @@ from requests import get
 import constants as cons
 
 def insert_city(city_name: str):
+    """
+        Inserts information about a city into the database.
+
+        Parameters:
+            city_name (str): The name of the city for which information will be inserted.
+
+        Returns:
+            str: Message indicating whether the insertion was successful or if the city was not found.
+    """
     city_info = get_city_infos(city_name)
 
     print(f"Inserting {city_name} DATA!")
@@ -32,6 +41,15 @@ def insert_city(city_name: str):
         return f"City {city_name} NOT found!"
 
 def insert_route(city_names: list):
+    """
+        Inserts information about a route into the database.
+
+        Parameters:
+            city_names (list): List containing the names of the origin and destination cities of the route.
+
+        Returns:
+            str: Message indicating whether the insertion of the route was successful.
+    """
     origin_info = get_city_infos(city_names[0])
     destination_info = get_city_infos(city_names[1])
 
@@ -53,6 +71,15 @@ def insert_route(city_names: list):
         raise e
 
 def get_city_infos(city_name: str):
+    """
+        Gets information about a city from a geolocation API.
+
+        Parameters:
+            city_name (str): The name of the city for which information will be obtained.
+
+        Returns:
+            dict: Dictionary containing information about the city.
+    """
     print(f'Getting {city_name} Infos')
     url_call = cons.COORDINATES_URL + city_name
 
