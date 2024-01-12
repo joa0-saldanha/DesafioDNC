@@ -3,101 +3,117 @@ from requests import get
 
 import constants as cons
 
-def insert_city(city: str):
+def insert_city(city_name: str):
+    """
+        Inserts information about a city into the database.
 
-    city = get_city_infos(city)
-    
-    print(f"Inserting {city} DATA!")
+        Parameters:
+            city_name (str): The name of the city for which information will be inserted.
 
-    if city['infos'] != 'Not Found':
-    
+        Returns:
+            str: Message indicating whether the insertion was successful or if the city was not found.
+    """
+    city_info = get_city_infos(city_name)
+
+    print(f"Inserting {city_name} DATA!")
+
+    if city_info['infos'] != 'Not Found':
         try:
-            connection = psy.connect(cons.CONNECTION_STRING)
+            with psy.connect(cons.CONNECTION_STRING) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO public.city
+                        (id, name, country_code, latitude, longitude)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (
+                        city_info['infos']['id'],
+                        city_info['infos']['name'],
+                        city_info['infos']['country_code'],
+                        city_info['infos']['latitude'],
+                        city_info['infos']['longitude']
+                    ))
+                connection.commit()
             
+            return f"{city_info['infos']['name']} added successfully!"
         except Exception as e:
             raise e
-
-        cursor = connection.cursor()
-        cursor.execute(f"""
-                    INSERT INTO "public"."city"
-                    (id, name, country_code, latitude, longitude)
-                    VALUES 
-                    ({city['infos']['id']}, '{city['infos']['name']}', '{city['infos']['country_code']}', {city['infos']['latitude']}, {city['infos']['longitude']}) 
-                    """)
-
-        connection.commit()
-        cursor.close()
-        connection.close()
-
-        return f"{city['infos']['name']} added succesfully!"
-    
     else:
-        
-        return f"City NOT found!"
+        return f"City {city_name} NOT found!"
 
-def insert_route(citys: list):
-    
-    origin = get_city_infos(citys[0])
-    destination = get_city_infos(citys[1])
+def insert_route(city_names: list):
+    """
+        Inserts information about a route into the database.
+
+        Parameters:
+            city_names (list): List containing the names of the origin and destination cities of the route.
+
+        Returns:
+            str: Message indicating whether the insertion of the route was successful.
+    """
+    origin_info = get_city_infos(city_names[0])
+    destination_info = get_city_infos(city_names[1])
 
     try:
-        connection = psy.connect(cons.CONNECTION_STRING)
+        with psy.connect(cons.CONNECTION_STRING) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO public.route
+                    (origin, destination)
+                    VALUES (%s, %s)
+                """, (
+                    origin_info['infos']['id'],
+                    destination_info['infos']['id']
+                ))
+                connection.commit()
+            
+            return "Route added successfully!"
     except Exception as e:
         raise e
-    
-    cursor = connection.cursor()
 
-    cursor.execute(f"""
-                INSERT INTO "public"."route"
-                (origin, destination)
-                VALUES
-                {origin['infos']['id'], destination['infos']['id']}
-                """)
-    
-    connection.commit()
-    cursor.close()
-    connection.close()
-    
-    return f"Route added succesfully!"
+def get_city_infos(city_name: str):
+    """
+        Gets information about a city from a geolocation API.
 
-def get_city_infos(city: str):
+        Parameters:
+            city_name (str): The name of the city for which information will be obtained.
 
-    print(f'Getting {city} Infos')
-
-    url_call = cons.COORDINATES_URL + city
+        Returns:
+            dict: Dictionary containing information about the city.
+    """
+    print(f'Getting {city_name} Infos')
+    url_call = cons.COORDINATES_URL + city_name
 
     try:
         infos = get(url_call).json()
 
         if 'results' in infos:
-            
-            city = {
+            city_info = {
                 "infos": infos['results'][0]
             }
-        
         else:
-
-            city = {
+            city_info = {
                 "infos": 'Not Found'
             }
 
-        return city
-
+        return city_info
     except Exception as e:
-
         raise e
-    
+
 def insert(request):
+    """
+        Acts as an entry point for inserting city or route information into the database.
 
+        Parameters:
+            request (dict): Dictionary containing information about the type of request and relevant data.
+
+        Returns:
+            - If the request is 'city', it returns a message indicating the success of the city insertion.
+            - If the request is 'route', it returns a message indicating the success of the route insertion.
+            - Otherwise, it returns "Invalid REQUEST!".
+    """
     if request['request'] == 'city':
-
         return insert_city(request['city'])
-    
     elif request['request'] == 'route':
-
         return insert_route(request['citys'])
-    
     else:
-
         return "Invalid REQUEST!"
-    
