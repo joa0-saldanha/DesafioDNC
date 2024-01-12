@@ -95,7 +95,10 @@ def forecast(request):
             - If the request is 'get_forecast', it returns the forecast information.
             - Otherwise, it returns 'Invalid request!'.
     """
-    if request == 'get_forecast':
+    request_json = request.get_json(silent=True)
+    task = request_json['task']
+
+    if task == 'get_forecast':
         return get_citys()
     else:
         return 'Invalid request!'
