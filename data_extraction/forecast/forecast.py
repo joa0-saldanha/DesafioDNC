@@ -12,13 +12,12 @@ def check_datebase(city: str):
     if city == "":
         raise ValueError("O nome da cidade não pode ser vazio")
 
+
     try:
         connection = psycopg2.connect(cons.CONNECTION_STRING)
 
     except Exception as e:
         raise e
-
-    
 
     cursor = connection.cursor()
     cursor.execute(f"""
@@ -81,7 +80,7 @@ def get_coordinates(city: str):
     
     else:
 
-        return (0, 0)
+        return (0, 0, 0)
     
 def get_forecast(coordinates: dict):
 
