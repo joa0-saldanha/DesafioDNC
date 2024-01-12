@@ -7,7 +7,7 @@ steps:
   - insertions
   - --region=us-central1
   - --entry-point=insert
-  - --source=./functions/
+  - --source=./functions
   - --trigger-http
   - --runtime=python39
   - --timeout=540s
