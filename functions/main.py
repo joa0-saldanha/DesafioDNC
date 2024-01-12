@@ -100,6 +100,17 @@ def get_city_infos(city_name: str):
         raise e
 
 def insert(request):
+    """
+        Acts as an entry point for inserting city or route information into the database.
+
+        Parameters:
+            request (dict): Dictionary containing information about the type of request and relevant data.
+
+        Returns:
+            - If the request is 'city', it returns a message indicating the success of the city insertion.
+            - If the request is 'route', it returns a message indicating the success of the route insertion.
+            - Otherwise, it returns "Invalid REQUEST!".
+    """
     if request['request'] == 'city':
         return insert_city(request['city'])
     elif request['request'] == 'route':
