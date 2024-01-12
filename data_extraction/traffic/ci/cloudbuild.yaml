@@ -7,7 +7,7 @@ steps:
   - traffic
   - --region=us-central1
   - --entry-point=traffic
-  - --source=./traffic/
+  - --source=./data_extraction/traffic
   - --trigger-http
   - --runtime=python39
   - --timeout=540s
