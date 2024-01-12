@@ -78,7 +78,7 @@ def insert_forecast(citys: list):
         for forecast in city['forecast']:
 
             cursor.execute(f"""
-                        INSERT INTO "public"."climate"
+                        INSERT INTO "public"."forecast"
                         (date, hour, city, temperature, humidity, precipitation)
                         VALUES 
                         ('{forecast['date']}', '{forecast['hour']}', {city['id']}, {forecast['temperature']}, {forecast['humidity']}, {forecast['precipitation']}) 
