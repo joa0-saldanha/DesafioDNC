@@ -69,6 +69,13 @@ def insert_forecast(citys):
     try:
         with psy.connect(cons.CONNECTION_STRING) as connection:
             with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO public.historical_forecast
+                    SELECT * FROM public.forecast;          
+
+                    TRUNCATE TABLE public.forecast;
+                """)
+
                 for city in citys:
                     for forecast in city['forecast']:
                         cursor.execute("""
