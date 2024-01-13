@@ -153,7 +153,7 @@ def traffic(request):
 
     if task == 'get_traffic':
         return get_routes()
-    elif task == 'cleaunup':
+    elif task == 'cleanup':
         return cleanup()
     else:
         return 'Invalid request!'
