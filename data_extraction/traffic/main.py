@@ -1,5 +1,6 @@
 from requests import get
 import psycopg2 as psy
+from datetime import datetime, timedelta, timezone
 import json
 
 import constants as cons
@@ -84,8 +85,8 @@ def insert_traffic(routes: list):
                     """, (
                         route['id'],
                         route['info']['lengthInMeters'],
-                        route['info']['departureTime'],
-                        route['info']['arrivalTime'],
+                        route['info']['departureTime'].astimezone(timezone(timedelta(hours=-3))),
+                        route['info']['arrivalTime'].astimezone(timezone(timedelta(hours=-3))),
                         route['info']['travelTimeInSeconds'],
                         route['info']['trafficDelayInSeconds'],
                         route['info']['trafficLengthInMeters']
