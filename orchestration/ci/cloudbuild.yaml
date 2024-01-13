@@ -3,17 +3,17 @@ steps:
     args:
       - '-c'
       - |
-        gsutil -m rsync -r -d 'airflow/plugins' 'gs://$_AIRFLOW_BUCKET/plugins'
+        gsutil -m rsync -r -d 'orchestration/airflow/plugins' 'gs://$_AIRFLOW_BUCKET/plugins'
     entrypoint: bash
   - name: gcr.io/cloud-builders/gsutil
     args:
       - '-c'
       - |
-        gsutil -m rsync -r -d 'airflow/data' 'gs://$_AIRFLOW_BUCKET/data'
+        gsutil -m rsync -r -d 'orchestration/airflow/data' 'gs://$_AIRFLOW_BUCKET/data'
     entrypoint: bash
   - name: gcr.io/cloud-builders/gsutil
     args:
       - '-c'
       - |
-        gsutil -m rsync -r -d 'airflow/dags' 'gs://$_AIRFLOW_BUCKET/dags'
+        gsutil -m rsync -r -d 'orchestration/airflow/dags' 'gs://$_AIRFLOW_BUCKET/dags'
     entrypoint: bash
