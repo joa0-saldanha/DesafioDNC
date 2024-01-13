@@ -31,6 +31,9 @@ with DAG(
     call_function = CallGoogleCloudFunctionsOperator(
         task_id='call_function',
         function_name='forecast',
+        function_params={
+            "task": "get_forecast"
+        },
         response_type='text'
     )
 

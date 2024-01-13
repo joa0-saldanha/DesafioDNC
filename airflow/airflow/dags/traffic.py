@@ -31,6 +31,9 @@ with DAG(
     call_function = CallGoogleCloudFunctionsOperator(
         task_id='call_function',
         function_name='traffic',
+        function_params={
+            "task": "get_traffic"
+        },
         response_type='text'
     )
 
