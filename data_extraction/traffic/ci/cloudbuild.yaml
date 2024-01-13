@@ -12,8 +12,9 @@ steps:
   - --runtime=python39
   - --timeout=540s
   - --memory=2Gi
-  - --set-secrets=DB_HOSTNAME=DB_HOSTNAME:latest,DB_USERNAME=DB_USERNAME:latest,DB_PASSWORD=DB_PASSWORD:latest,API_KEY=API_KEY:latest
-  - --set-env-vars
-  - ENV=$BRANCH_NAME
+  - --set-secrets=DB_HOSTNAME=DB_HOSTNAME:latest
+  - --set-secrets=DB_USERNAME=DB_USERNAME:latest
+  - --set-secrets=DB_PASSWORD=DB_PASSWORD:latest
+  - --set-secrets=API_KEY=API_KEY:latest
 options:
   logging: 'CLOUD_LOGGING_ONLY'
