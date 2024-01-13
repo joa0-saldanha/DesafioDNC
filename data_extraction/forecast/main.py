@@ -134,7 +134,7 @@ def forecast(request):
 
     if task == 'get_forecast':
         return get_citys()
-    elif task == 'cleaunup':
+    elif task == 'cleanup':
         return cleanup()
     else:
         return 'Invalid request!'
