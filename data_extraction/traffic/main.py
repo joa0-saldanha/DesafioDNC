@@ -108,6 +108,32 @@ def insert_traffic(routes: list):
 
     except Exception as e:
         raise e
+    
+
+def cleanup():
+    """
+        Cleans up old traffic records from the database.
+
+        Deletes traffic records older than 7 days from the 'public.traffic' table.
+
+        Returns:
+            str: String indicating the success of the cleanup operation.
+    """
+    try:
+        with psy.connect(cons.CONNECTION_STRING) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    DELETE FROM public.traffic
+                    WHERE CURRENT_DATE - CAST(departure_time AS DATE) > 7;
+                """)
+                    
+                connection.commit()
+
+        return "Clean up successful!"
+    
+    except Exception as e:
+        print(e)
+        raise e
 
 def traffic(request):
     """
@@ -127,5 +153,7 @@ def traffic(request):
 
     if task == 'get_traffic':
         return get_routes()
+    elif task == 'cleaunup':
+        return cleanup()
     else:
         return 'Invalid request!'
