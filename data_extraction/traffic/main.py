@@ -76,12 +76,20 @@ def insert_traffic(routes: list):
 
     try:
         with psy.connect(cons.CONNECTION_STRING) as connection:
-            for route in routes:
-                with connection.cursor() as cursor:
+            with connection.cursor() as cursor:
+
+                cursor.execute("""
+                    INSERT INTO public.historical_traffic
+                    SELECT * FROM public.traffic;          
+
+                    TRUNCATE TABLE public.traffic;
+                """)
+
+                for route in routes:
                     cursor.execute("""
                         INSERT INTO public.traffic
                         (route, distance_in_meters, departure_time, arrival_time, travel_time_in_seconds, traffic_delay_in_seconds, traffic_distance_in_meters)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s);
                     """, (
                         route['id'],
                         route['info']['lengthInMeters'],
@@ -91,6 +99,7 @@ def insert_traffic(routes: list):
                         route['info']['trafficDelayInSeconds'],
                         route['info']['trafficLengthInMeters']
                     ))
+                    
                 connection.commit()
 
         return 'Ok'
