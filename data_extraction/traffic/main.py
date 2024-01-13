@@ -85,8 +85,8 @@ def insert_traffic(routes: list):
                     """, (
                         route['id'],
                         route['info']['lengthInMeters'],
-                        datetime.strptime(route['info']['departureTime'], "%Y-%m-%d %H:%M:%S %z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
-                        datetime.strptime(route['info']['arrivalTime'], "%Y-%m-%d %H:%M:%S %z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
+                        datetime.strptime(route['info']['departureTime'], "%Y-%m-%dT%H:%M:%S%z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
+                        datetime.strptime(route['info']['arrivalTime'], "%Y-%m-%dT%H:%M:%S%z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
                         route['info']['travelTimeInSeconds'],
                         route['info']['trafficDelayInSeconds'],
                         route['info']['trafficLengthInMeters']
