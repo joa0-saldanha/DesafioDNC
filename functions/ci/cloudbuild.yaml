@@ -1,0 +1,19 @@
+steps:
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - insertions
+  - --region=us-central1
+  - --entry-point=insert
+  - --source=./functions
+  - --trigger-http
+  - --runtime=python39
+  - --timeout=540s
+  - --memory=2Gi
+  - --set-secrets=DB_HOSTNAME=DB_HOSTNAME:latest
+  - --set-secrets=DB_USERNAME=DB_USERNAME:latest
+  - --set-secrets=DB_PASSWORD=DB_PASSWORD:latest
+options:
+  logging: 'CLOUD_LOGGING_ONLY'
