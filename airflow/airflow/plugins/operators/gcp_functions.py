@@ -9,7 +9,7 @@ class CallGoogleCloudFunctionsOperator(BaseOperator):
 
     template_fields = ('function_name', 'function_params', 'project_id')
 
-    def _init_(
+    def __init__(
         self,
         *,
         function_name,
@@ -21,7 +21,7 @@ class CallGoogleCloudFunctionsOperator(BaseOperator):
         gcp_conn_id='google_cloud_default',
         **kwargs
     ):
-        super()._init_(**kwargs)
+        super().__init__(**kwargs)
         self.gcp_conn_id = gcp_conn_id
         self.function_name = function_name
         self.function_params = function_params

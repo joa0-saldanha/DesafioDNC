@@ -19,7 +19,7 @@ with DAG(
         description=f'Get FORECAST informations to the DATABASE',
         tags=['forecast'],
         start_date=datetime(2024, 1, 13),
-        schedule_interval='10 0 * * *', 
+        schedule_interval='10 3 * * *', 
         default_args=args,
         catchup=False,
         dagrun_timeout=timedelta(minutes=60),
@@ -28,10 +28,13 @@ with DAG(
         is_paused_upon_creation=True
 ) as dag:
 
-    call_function = CallGoogleCloudFunctionsOperator(
-        task_id='call_function',
+    forecast_data = CallGoogleCloudFunctionsOperator(
+        task_id='forecast_data',
         function_name='forecast',
+        function_params={
+            "task": "get_forecast"
+        },
         response_type='text'
     )
 
-    call_function
+    forecast_data

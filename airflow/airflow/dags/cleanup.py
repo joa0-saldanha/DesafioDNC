@@ -15,11 +15,11 @@ args = {
 }
 
 with DAG(
-        dag_id=f'traffic',
-        description=f'Get TRAFFIC informations to the DATABASE',
-        tags=['traffic'],
+        dag_id=f'cleaunup',
+        description=f'Cleanup the HISTORICAL DATA on the DATABASE',
+        tags=['cleaunup', 'forecast', 'traffic'],
         start_date=datetime(2024, 1, 13),
-        schedule_interval='0 * * * *', 
+        schedule_interval='59 21 * * *', 
         default_args=args,
         catchup=False,
         dagrun_timeout=timedelta(minutes=60),
@@ -28,13 +28,22 @@ with DAG(
         is_paused_upon_creation=True
 ) as dag:
 
-    traffic_data = CallGoogleCloudFunctionsOperator(
-        task_id='traffic_data',
-        function_name='traffic',
+    forecast_cleanup = CallGoogleCloudFunctionsOperator(
+        task_id='forecast_cleanup',
+        function_name='forecast',
         function_params={
-            "task": "get_traffic"
+            "task": "cleanup"
         },
         response_type='text'
     )
 
-    traffic_data
+    traffic_cleanup = CallGoogleCloudFunctionsOperator(
+        task_id='traffic_cleanup',
+        function_name='traffic',
+        function_params={
+            "task": "cleanup"
+        },
+        response_type='text'
+    )
+
+    forecast_cleanup >> traffic_cleanup
