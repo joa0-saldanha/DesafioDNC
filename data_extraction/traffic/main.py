@@ -85,8 +85,8 @@ def insert_traffic(routes: list):
                     """, (
                         route['id'],
                         route['info']['lengthInMeters'],
-                        route['info']['departureTime'],
-                        route['info']['arrivalTime'],
+                        route['info']['departureTime'].split("+")[0].strip(),
+                        route['info']['arrivalTime'].split("+")[0].strip(),
                         route['info']['travelTimeInSeconds'],
                         route['info']['trafficDelayInSeconds'],
                         route['info']['trafficLengthInMeters']
