@@ -81,12 +81,12 @@ def insert_traffic(routes: list):
                     cursor.execute("""
                         INSERT INTO public.traffic
                         (route, distance_in_meters, departure_time, arrival_time, travel_time_in_seconds, traffic_delay_in_seconds, traffic_distance_in_meters)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo', %s AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo', %s, %s, %s)
                     """, (
                         route['id'],
                         route['info']['lengthInMeters'],
-                        datetime.strptime(route['info']['departureTime'], "%Y-%m-%dT%H:%M:%S%z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
-                        datetime.strptime(route['info']['arrivalTime'], "%Y-%m-%dT%H:%M:%S%z").astimezone(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S %z"),
+                        route['info']['departureTime'],
+                        route['info']['arrivalTime'],
                         route['info']['travelTimeInSeconds'],
                         route['info']['trafficDelayInSeconds'],
                         route['info']['trafficLengthInMeters']
