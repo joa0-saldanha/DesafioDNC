@@ -80,7 +80,9 @@ def insert_traffic(routes: list):
 
                 cursor.execute("""
                     INSERT INTO public.historical_traffic
-                    SELECT * FROM public.traffic;          
+                    (route, distance_in_meters, travel_time_in_seconds, traffic_delay_in_seconds, traffic_distance_in_meters, departure_time, arrival_time)
+                    SELECT route, distance_in_meters, travel_time_in_seconds, traffic_delay_in_seconds, traffic_distance_in_meters, departure_time, arrival_time
+                    FROM public.traffic;          
 
                     TRUNCATE TABLE public.traffic;
                 """)
