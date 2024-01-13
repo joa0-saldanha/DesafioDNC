@@ -92,6 +92,31 @@ def insert_forecast(citys):
     except Exception as e:
         raise e
 
+def cleanup():
+    """
+        Cleans up old forecast records from the database.
+
+        Deletes forecast records older than 7 days from the 'public.forecast' table.
+
+        Returns:
+            str: String indicating the success of the cleanup operation.
+    """
+    try:
+        with psy.connect(cons.CONNECTION_STRING) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    DELETE FROM public.forecast
+                    WHERE CURRENT_DATE - date > 7;
+                """)
+                    
+                connection.commit()
+
+        return "Clean up successful!"
+    
+    except Exception as e:
+        print(e)
+        raise e
+
 def forecast(request):
     """
         Acts as an entry point for fetching forecast-related information.
@@ -109,5 +134,7 @@ def forecast(request):
 
     if task == 'get_forecast':
         return get_citys()
+    elif task == 'cleaunup':
+        return cleanup()
     else:
         return 'Invalid request!'
