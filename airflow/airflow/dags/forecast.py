@@ -28,8 +28,8 @@ with DAG(
         is_paused_upon_creation=True
 ) as dag:
 
-    call_function = CallGoogleCloudFunctionsOperator(
-        task_id='call_function',
+    forecast_data = CallGoogleCloudFunctionsOperator(
+        task_id='forecast_data',
         function_name='forecast',
         function_params={
             "task": "get_forecast"
@@ -37,4 +37,4 @@ with DAG(
         response_type='text'
     )
 
-    call_function
+    forecast_data
