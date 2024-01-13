@@ -71,7 +71,9 @@ def insert_forecast(citys):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO public.historical_forecast
-                    SELECT * FROM public.forecast;          
+                    (city, date, hour, temperature, humidity, precipitation)
+                    SELECT city, date, hour, temperature, humidity, precipitation
+                    FROM public.forecast;    
 
                     TRUNCATE TABLE public.forecast;
                 """)
