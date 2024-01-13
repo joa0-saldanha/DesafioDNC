@@ -19,7 +19,7 @@ with DAG(
         description=f'Get FORECAST informations to the DATABASE',
         tags=['forecast'],
         start_date=datetime(2024, 1, 13),
-        schedule_interval='10 0 * * *', 
+        schedule_interval='10 3 * * *', 
         default_args=args,
         catchup=False,
         dagrun_timeout=timedelta(minutes=60),
