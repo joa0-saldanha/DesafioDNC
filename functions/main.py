@@ -1,4 +1,5 @@
 import psycopg2 as psy
+from psycopg2.errors import ForeignKeyViolation, UniqueViolation
 from requests import get
 
 import constants as cons
@@ -35,7 +36,8 @@ def insert_city(city_name: str):
                 connection.commit()
             
             return f"{city_info['infos']['name']} added successfully!"
-        except Exception as e:
+        except UniqueViolation as e:
+            print("This city ID already EXISTS! Probably the CITY you're trying to add ALREADY EXISTS.")
             raise e
     else:
         return f"City {city_name} NOT found!"
@@ -67,7 +69,8 @@ def insert_route(city_names: list):
                 connection.commit()
             
             return "Route added successfully!"
-    except Exception as e:
+    except ForeignKeyViolation as e:
+        print('Origin/Destination is not on the table CITY! Please add it before adding the route.')
         raise e
 
 def get_city_infos(city_name: str):
@@ -97,6 +100,7 @@ def get_city_infos(city_name: str):
 
         return city_info
     except Exception as e:
+        print(e)
         raise e
 
 def insert(request):
