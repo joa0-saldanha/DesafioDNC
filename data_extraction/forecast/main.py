@@ -50,7 +50,7 @@ def call_api(data: list, task: str , filename: str):
         print("Getting TRAFFIC information!")
 
         for route in data:
-            url_call = "https://api.tomtom.com/routing/1/calculateRoute/{},{}/{}:{},{}/json?key={}".format(    
+            url_call = "https://api.tomtom.com/routing/1/calculateRoute/{},{}:{},{}/json?key={}".format(
                 route['origin_lat'], 
                 route['origin_lon'],
                 route['dest_lat'], 
