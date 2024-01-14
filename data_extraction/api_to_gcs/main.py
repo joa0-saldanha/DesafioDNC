@@ -64,10 +64,10 @@ def call_api(data: list, task: str , filename: str):
             try:
                 route['info'] = get(url_call).json()['routes'][0]["summary"]
                 route['info']['id'] = datetime.fromisoformat(route['info']['departureTime'][:-6]).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
-                route['info']['route'] = route['id']
+                route['info']['route'] = route['route_id']
 
             except Exception as e:
-                print(f"Error getting info for route {route['id']}")
+                print(f"Error getting info for route {route['route_id']}")
                 print(e)
                 pass
 
