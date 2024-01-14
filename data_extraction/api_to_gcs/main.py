@@ -3,6 +3,7 @@ import json
 from google.cloud import bigquery, storage
 from datetime import datetime
 import pytz
+from itertools import chain
 
 import constants as cons
 
@@ -43,11 +44,12 @@ def call_api(data: list, task: str , filename: str):
 
                 for forecast in city['info']:
                     forecast['id'] = f"C{city['id']}D{forecast['date']}H{forecast['hour']}"
+                    forecast['city'] = city['id']
 
             except Exception as e:
                 raise e
             
-        return generate_json(data, task, filename)
+        return generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
     
     else:
 
@@ -80,7 +82,7 @@ def generate_json(data: list, task: str, filename: str):
     print(f"Generating {task} .json!")
 
     with open(f"/tmp/{filename}", 'w') as f:
-        f.write('\n'.join(json.dumps(row) for row in [row for row in [row['info'] for row in data]])) if task == "forecast" else f.write('\n'.join(json.dumps(row['info']) for row in data)) 
+        f.write('\n'.join(json.dumps(row['info']) for row in data)) 
     
     
 
