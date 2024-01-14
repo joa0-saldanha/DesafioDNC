@@ -12,7 +12,7 @@ schema = [
         {'name': 'temperature',     'type': 'FLOAT64'},				
         {'name': 'humidity',        'type': 'FLOAT64'},				
         {'name': 'precipitation',   'type': 'FLOAT64'},
-        {'name': 'id',              'type': 'INTEGER'}	
+        {'name': 'id',              'type': 'STRING'}	
     ]
 
 args = {
