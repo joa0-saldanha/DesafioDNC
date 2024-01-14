@@ -3,17 +3,7 @@ from datetime import datetime, timedelta
 from airflow.models import DAG
 from operators.gcp_functions import CallGoogleCloudFunctionsOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
-
-
-schema = [						
-        {'name': 'date',            'type': 'DATE'},				
-        {'name': 'hour',            'type': 'TIME'},				
-        {'name': 'temperature',     'type': 'FLOAT64'},				
-        {'name': 'humidity',        'type': 'INTEGER'},				
-        {'name': 'precipitation',   'type': 'FLOAT64'},
-        {'name': 'id',              'type': 'STRING'},	
-        {'name': 'city',            'type': 'INTEGER'}	
-    ]
+from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 args = {
     'owner': 'data_lake',
@@ -50,16 +40,22 @@ with DAG(
         response_type='text'
     )
 
+    data_to_historical = BigQueryExecuteQueryOperator(
+        task_id='data_to_historical',
+        sql="sql/historical_forecast.sql",
+        use_legacy_sql=False
+    )
+
     json_to_table = GCSToBigQueryOperator(
         task_id='json_to_table',
         bucket="dnc-forecast-traffic-data",
         source_objects="{{ ti.xcom_pull(task_ids='call_function') }}",
         destination_project_dataset_table="estudos-410923.DNC.forecast",
         source_format='NEWLINE_DELIMITED_JSON',
-        schema_fields=schema,
+        schema_fields="schemas/forecast.json",
         write_disposition='WRITE_TRUNCATE',
         create_disposition='CREATE_IF_NEEDED', 
         ignore_unknown_values=True
     )
 
-    call_function >> json_to_table
+    call_function >> data_to_historical >> json_to_table

@@ -1,0 +1,42 @@
+[							
+    {
+        "mode": "NULLABLE",
+        "name": "lengthInMeters",            
+        "type": "INTEGER"
+    },				
+    {
+        "mode": "NULLABLE",
+        "name": "travelTimeInSeconds",       
+        "type": "INTEGER"
+    },				
+    {
+        "mode": "NULLABLE",
+        "name": "trafficDelayInSeconds",     
+        "type": "INTEGER"
+    },				
+    {
+        "mode": "NULLABLE",
+        "name": "trafficLengthInMeters",     
+        "type": "INTEGER"
+    },				
+    {
+        "mode": "NULLABLE",
+        "name": "departureTime",             
+        "type": "TIMESTAMP"
+    },				
+    {
+        "mode": "NULLABLE",
+        "name": "arrivalTime",               
+        "type": "TIMESTAMP"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "id",                        
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "route",                     
+        "type": "INTEGER"
+    }	
+]
