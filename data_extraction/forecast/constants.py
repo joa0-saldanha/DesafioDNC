@@ -1,4 +1,8 @@
+import os
+
+FORECAST_URL = f"https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,relative_humidity_2m,precipitation&timezone=America%2FSao_Paulo&forecast_days=1&"
 BUCKET_NAME = "dnc-forecast-traffic-data"
+API_KEY = os.environ.get('API_KEY')
 
 CITYS_QUERY = """SELECT 
                     id, 
@@ -19,5 +23,3 @@ ROUTES_QUERY = """
         LEFT JOIN DNC.city AS d 
             ON r.destination = d.id;
     """
-
-FORECAST_URL = f"https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,relative_humidity_2m,precipitation&timezone=America%2FSao_Paulo&forecast_days=1&"
