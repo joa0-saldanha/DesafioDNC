@@ -92,4 +92,4 @@ def upload_json(filename: str, task: str):
 def api_to_gcs(request):
     request_json = request.get_json(silent=True)
 
-    return get_data(request_json['task'], f"{request_json['task']}_{request_json['datetime']}")
+    return get_data(request_json['task'], f"{request_json['task']}_{request_json['datetime']}.json")
