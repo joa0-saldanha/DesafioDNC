@@ -30,13 +30,13 @@ with DAG(
 
     clean_historical_traffic = BigQueryExecuteQueryOperator(
         task_id='clean_historical_traffic',
-        sql="sql/clean_historical_traffic.sql",
+        sql="sql/traffic/clean_historical_traffic.sql",
         use_legacy_sql=False
     )
 
     clean_historical_forecast = BigQueryExecuteQueryOperator(
         task_id='clean_historical_forecast',
-        sql="sql/clean_historical_forecast.sql",
+        sql="sql/forecast/clean_historical_forecast.sql",
         use_legacy_sql=False
     )
 

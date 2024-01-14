@@ -47,7 +47,7 @@ with DAG(
 
     data_to_historical = BigQueryExecuteQueryOperator(
         task_id='data_to_historical',
-        sql="sql/historical_traffic.sql",
+        sql="sql/traffic/historical_traffic.sql",
         use_legacy_sql=False
     )
 
@@ -63,4 +63,10 @@ with DAG(
         ignore_unknown_values=True
     )
 
-    call_function >> data_to_historical >> json_to_table
+    refined = BigQueryExecuteQueryOperator(
+        task_id='refined',
+        sql="sql/traffic/refined_traffic.sql",
+        use_legacy_sql=False
+    )
+
+    call_function >> data_to_historical >> json_to_table >> refined
