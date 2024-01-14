@@ -1,3 +1,4 @@
+import logging
 from requests import get
 import json
 from google.cloud import bigquery, storage
@@ -7,101 +8,107 @@ from itertools import chain
 
 import constants as cons
 
-def get_data(task: str , filename: str):
-    print(f"Getting CITYS data!") if task == "forecast" else print(f"Getting ROUTES data!")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+def log_error(message, exception):
+    """Registra mensagens de erro."""
+    logger.error(message)
+    logger.error(exception)
+
+def get_data(task, filename):
+    """Obtém dados de uma fonte específica."""
+    logger.info(f"Obtendo dados para tarefa: {task}")
     QUERY = cons.CITYS_QUERY if task == "forecast" else cons.ROUTES_QUERY
     
     try:
         bq = bigquery.Client()
-
         return call_api([dict(row) for row in bq.query(QUERY).result()], task, filename)
 
     except Exception as e:
-        raise e
+        log_error("Erro ao consultar o BigQuery", e)
 
-def call_api(data: list, task: str , filename: str):
-
+def call_api(data, task, filename):
+    """Chama a API e processa os dados."""
     if task == "forecast":
-
-        print('Getting FORECAST information!')
-
         for city in data:
-            url_call = cons.FORECAST_URL + f"latitude={city['lat']}&longitude={city['lon']}"
-            
-            try:
-                forecast = get(url_call).json()
-
-                city['info'] = [
-                    {
-                        "date": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date()),
-                        "hour": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time()),
-                        "temperature": forecast['hourly']['temperature_2m'][i],
-                        "humidity": forecast['hourly']['relative_humidity_2m'][i],
-                        "precipitation": forecast['hourly']['precipitation'][i]
-                    } for i in range(0, 24)
-                ]
-
-                for forecast in city['info']:
-                    forecast['id'] = f"C{city['id']}D{forecast['date']}H{forecast['hour']}"
-                    forecast['city'] = city['id']
-
-            except Exception as e:
-                raise e
-            
-        return generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
-    
-    else:
-
-        print("Getting TRAFFIC information!")
-
+            process_forecast(city)
+        generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
+    elif task == "traffic":
         for route in data:
-            url_call = "https://api.tomtom.com/routing/1/calculateRoute/{},{}:{},{}/json?key={}".format(
-                route['origin_lat'], 
-                route['origin_lon'],
-                route['dest_lat'], 
-                route['dest_lon'],
-                cons.API_KEY
-            )
+            process_traffic(route)
+        generate_json([route['info'] for route in data], task, filename)
 
-            try:
-                route['info'] = get(url_call).json()['routes'][0]["summary"]
-                route['info']['departureTime'] = route['info']['departureTime'][:-6]
-                route['info']['arrivalTime'] = route['info']['arrivalTime'][:-6]
-                route['info']['id'] = datetime.fromisoformat(route['info']['departureTime'][:-6]).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
-                route['info']['route'] = route['route_id']
+def process_forecast(city):
+    """Processa os dados de previsão do tempo para uma cidade."""
+    url_call = cons.FORECAST_URL + f"latitude={city['lat']}&longitude={city['lon']}"
+    try:
+        forecast = get(url_call).json()
+        city['info'] = generate_forecast_info(forecast, city)
+    except Exception as e:
+        log_error(f"Erro ao obter previsão para a cidade {city['id']}", e)
 
-            except Exception as e:
-                print(f"Error getting info for route {route['route_id']}")
-                print(e)
-                pass
+def generate_forecast_info(forecast, city):
+    """Gera informações de previsão do tempo a partir dos dados brutos."""
+    return [
+        {
+            "date": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date()),
+            "hour": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time()),
+            "temperature": forecast['hourly']['temperature_2m'][i],
+            "humidity": forecast['hourly']['relative_humidity_2m'][i],
+            "precipitation": forecast['hourly']['precipitation'][i],
+            "id": f"C{city['id']}D{forecast['hourly']['time'][i]}H{forecast['hourly']['time'][i]}",
+            "city": city['id'],
+        } for i in range(0, 24)
+    ]
 
-        return generate_json([route['info'] for route in data], task, filename)
+def process_traffic(route):
+    """Processa os dados de tráfego para uma rota."""
+    url_call = "https://api.tomtom.com/routing/1/calculateRoute/{},{}:{},{}/json?key={}".format(
+        route['origin_lat'], 
+        route['origin_lon'],
+        route['dest_lat'], 
+        route['dest_lon'],
+        cons.API_KEY
+    )
+    try:
+        route['info'] = generate_traffic_info(get(url_call).json(), route)
+    except Exception as e:
+        log_error(f"Erro ao obter informações para a rota {route['route_id']}", e)
 
-def generate_json(data: list, task: str, filename: str):
-    print(f"Generating {task} .json!")
+def generate_traffic_info(response, route):
+    """Gera informações de tráfego a partir dos dados brutos."""
+    summary = response['routes'][0]["summary"]
+    summary['departureTime'] = summary['departureTime'][:-6]
+    summary['arrivalTime'] = summary['arrivalTime'][:-6]
+    summary['id'] = datetime.fromisoformat(summary['departureTime']).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
+    summary['route'] = route['route_id']
+    return summary
 
+def generate_json(data, task, filename):
+    """Gera um arquivo JSON localmente e o envia para o Cloud Storage."""
+    logger.info(f"Gerando arquivo {task}.json")
     with open(f"/tmp/{filename}", 'w') as f:
         f.write('\n'.join(json.dumps(row) for row in data)) 
     
-    
-
     return upload_json(filename, task)
 
-def upload_json(filename: str, task: str):
-    print(f"Uploading {task} .json file to GCS!")
-
+def upload_json(filename, task):
+    """Faz o upload do arquivo JSON para o Cloud Storage."""
+    logger.info(f"Fazendo upload do arquivo {task}.json para o GCS")
     try:
         client = storage.Client()
         bucket = client.bucket(cons.BUCKET_NAME)
         blob = bucket.blob(f"{task}/{filename}")
         blob.upload_from_filename(f"/tmp/{filename}")
     except Exception as e:
-        raise e
+        log_error(f"Erro ao fazer upload do arquivo {task}.json para o GCS", e)
     
     return f"{task}/{filename}"
 
 def api_to_gcs(request):
+    """Função principal chamada pelo Cloud Function."""
     request_json = request.get_json(silent=True)
-
+    
     return get_data(request_json['task'], f"{request_json['task']}_{request_json['datetime']}.json")
+
