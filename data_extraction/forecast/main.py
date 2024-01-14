@@ -69,6 +69,15 @@ def insert_forecast(citys):
     try:
         with psy.connect(cons.CONNECTION_STRING) as connection:
             with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO public.historical_forecast
+                    (city, date, hour, temperature, humidity, precipitation)
+                    SELECT city, date, hour, temperature, humidity, precipitation
+                    FROM public.forecast;    
+
+                    TRUNCATE TABLE public.forecast;
+                """)
+
                 for city in citys:
                     for forecast in city['forecast']:
                         cursor.execute("""
@@ -81,6 +90,31 @@ def insert_forecast(citys):
         return 'Ok'
 
     except Exception as e:
+        raise e
+
+def cleanup():
+    """
+        Cleans up old forecast records from the database.
+
+        Deletes forecast records older than 7 days from the 'public.forecast' table.
+
+        Returns:
+            str: String indicating the success of the cleanup operation.
+    """
+    try:
+        with psy.connect(cons.CONNECTION_STRING) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    DELETE FROM public.forecast
+                    WHERE CURRENT_DATE - date > 7;
+                """)
+                    
+                connection.commit()
+
+        return "Clean up successful!"
+    
+    except Exception as e:
+        print(e)
         raise e
 
 def forecast(request):
@@ -100,5 +134,7 @@ def forecast(request):
 
     if task == 'get_forecast':
         return get_citys()
+    elif task == 'cleanup':
+        return cleanup()
     else:
         return 'Invalid request!'
