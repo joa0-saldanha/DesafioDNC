@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
+import json
 
 from airflow.models import DAG
 from operators.gcp_functions import CallGoogleCloudFunctionsOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
+
+with open("data/schemas/traffic.json", "r") as file:
+    schema = json.load(file)
 
 args = {
     'owner': 'data_lake',

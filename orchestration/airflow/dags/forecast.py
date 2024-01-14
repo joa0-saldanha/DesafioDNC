@@ -1,9 +1,15 @@
 from datetime import datetime, timedelta
+import json
 
 from airflow.models import DAG
 from operators.gcp_functions import CallGoogleCloudFunctionsOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
+
+
+with open("data/schemas/forecast.json", "r") as file:
+    schema = json.load(file)
+
 
 args = {
     'owner': 'data_lake',
@@ -52,7 +58,7 @@ with DAG(
         source_objects="{{ ti.xcom_pull(task_ids='call_function') }}",
         destination_project_dataset_table="estudos-410923.DNC.forecast",
         source_format='NEWLINE_DELIMITED_JSON',
-        schema_fields="schemas/forecast.json",
+        schema_fields=schema,
         write_disposition='WRITE_TRUNCATE',
         create_disposition='CREATE_IF_NEEDED', 
         ignore_unknown_values=True

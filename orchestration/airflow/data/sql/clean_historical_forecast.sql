@@ -1,0 +1,2 @@
+DELETE FROM `estudos-410923.DNC.forecast` f
+WHERE f.date < DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY);
