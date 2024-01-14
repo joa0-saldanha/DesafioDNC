@@ -12,8 +12,6 @@ Funções para chamar APIs de previsão do tempo e tráfego, processar dados e e
 - API-TO-GCS: Módulo ***Python*** para a extração, processamento e armazenamento de dados meteorológicos e de trânsito;<br>
 - CONSTANTS: Arquivo para armazenar constantes e configurações do projeto.<br>
 
-
-
 ***- Google Cloud Storage:***<br>
 Armazenamento de arquivos ***JSON*** gerados pela extração de dados.
 
@@ -26,6 +24,9 @@ Orquestrador de fluxos de trabalho para programar e monitorar a execução das t
 - DAGs (Directed Acyclic Graphs):<br><br>
 **forecast.py:** DAG para obtenção e armazenamento de dados meteorológicos;<br>
 **traffic.py:** DAG para obtenção e armazenamento de dados de trânsito.
+
+***- Cloud Build***<br>
+A configuração do **Cloud Build** é definida nos arquivos *cloudbuild.yaml* na raiz do projeto. Este arquivo contém as etapas do pipeline **CI/CD**.
 
 ## Configuração
 
