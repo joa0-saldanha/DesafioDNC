@@ -61,6 +61,7 @@ def call_api(data: list, task: str , filename: str):
 
             try:
                 route['info'] = get(url_call).json()['routes'][0]["summary"]
+                route['info']['id'] = datetime.fromisoformat(route['info']['departureTime'][:-6]).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
 
             except Exception as e:
                 print(f"Error getting info for route {route['id']}")
@@ -73,7 +74,7 @@ def generate_json(data: list, task: str, filename: str):
     print("Generating TRAFFIC .json!")
 
     with open(f"/tmp/{filename}", 'w') as f:
-        f.write('\n'.join(json.dumps(row) for row in data))
+        f.write('\n'.join(json.dumps(row['info']) for row in data))
 
     return upload_json(filename, task)
 
