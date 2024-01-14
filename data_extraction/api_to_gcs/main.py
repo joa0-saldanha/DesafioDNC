@@ -33,11 +33,11 @@ def call_api(data, task, filename):
     if task == "forecast":
         for city in data:
             process_forecast(city)
-        generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
+        return generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
     elif task == "traffic":
         for route in data:
             process_traffic(route)
-        generate_json([route['info'] for route in data], task, filename)
+        return generate_json([route['info'] for route in data], task, filename)
 
 def process_forecast(city):
     """Processa os dados de previsão do tempo para uma cidade."""
@@ -57,7 +57,7 @@ def generate_forecast_info(forecast, city):
             "temperature": forecast['hourly']['temperature_2m'][i],
             "humidity": forecast['hourly']['relative_humidity_2m'][i],
             "precipitation": forecast['hourly']['precipitation'][i],
-            "id": f"C{city['id']}D{forecast['hourly']['time'][i]}H{forecast['hourly']['time'][i]}",
+            "id": f"C{city['id']}D{forecast['hourly']['time'][i]}".replace("-","").replace(":","").replace("T","H")[:-2],
             "city": city['id'],
         } for i in range(0, 24)
     ]
@@ -81,7 +81,7 @@ def generate_traffic_info(response, route):
     summary = response['routes'][0]["summary"]
     summary['departureTime'] = summary['departureTime'][:-6]
     summary['arrivalTime'] = summary['arrivalTime'][:-6]
-    summary['id'] = datetime.fromisoformat(summary['departureTime']).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
+    summary['id'] = f"R{route['route_id']}D{datetime.fromisoformat(summary['departureTime']).replace(tzinfo=pytz.utc).strftime('%y%m%dH%H%M')}"
     summary['route'] = route['route_id']
     return summary
 
