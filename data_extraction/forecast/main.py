@@ -1,140 +1,95 @@
 from requests import get
-import psycopg2 as psy
+import json
+from google.cloud import bigquery, storage
 from datetime import datetime
 
 import constants as cons
 
-def get_citys():
-    """
-        Retrieves city information from the database.
+def get_data(task: str , filename: str):
+    print(f"Getting CITYS data!") if task == "forecast" else print(f"Getting ROUTES data!")
 
-        Returns:
-            list: List of dictionaries representing cities with their IDs, latitudes, and longitudes.
-    """
-    print("Getting CITIES!")
+    QUERY = cons.CITYS_QUERY if task == "forecast" else cons.ROUTES_QUERY
     
     try:
-        with psy.connect(cons.CONNECTION_STRING) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id, latitude, longitude FROM public.city")
-                citys = [{'id': route[0], 'lat': route[1], 'lon': route[2]} for route in cursor.fetchall()]
+        bq = bigquery.Client()
 
-        return get_forecast(citys)
+        return call_api([dict(row) for row in bq.query(QUERY).result()], task, filename)
 
     except Exception as e:
         raise e
 
-def get_forecast(citys):
-    """
-        Retrieves forecast information for each city using the OpenWeatherMap API.
+def call_api(data: list, task: str , filename: str):
 
-        Parameters:
-            citys (list): List of dictionaries representing cities.
-    """
-    print('Getting FORECAST!')
+    if task == "forecast":
 
-    for city in citys:
-        url_call = cons.FORECAST_URL + f"latitude={city['lat']}&longitude={city['lon']}"
-        
-        try:
-            forecast = get(url_call).json()
+        print('Getting FORECAST information!')
 
-            city['forecast'] = [
-                {
-                    "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
-                    "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
-                    "temperature": forecast['hourly']['temperature_2m'][i],
-                    "humidity": forecast['hourly']['relative_humidity_2m'][i],
-                    "precipitation": forecast['hourly']['precipitation'][i]
-                } for i in range(0, 24)
-            ]
+        for city in data:
+            url_call = cons.FORECAST_URL + f"latitude={city['lat']}&longitude={city['lon']}"
+            
+            try:
+                forecast = get(url_call).json()
 
-        except Exception as e:
-            raise e
+                city['forecast'] = [
+                    {
+                        "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
+                        "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
+                        "temperature": forecast['hourly']['temperature_2m'][i],
+                        "humidity": forecast['hourly']['relative_humidity_2m'][i],
+                        "precipitation": forecast['hourly']['precipitation'][i]
+                    } for i in range(0, 24)
+                ]
 
-    return insert_forecast(citys)
-
-def insert_forecast(citys):
-    """
-        Inserts forecast information into the database for each city.
-
-        Parameters:
-            citys (list): List of dictionaries representing cities with forecast information.
-
-        Returns:
-            str: String indicating the success of the operation.
-    """
-    print("Inserting FORECAST to the DATABASE!")
-
-    try:
-        with psy.connect(cons.CONNECTION_STRING) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    INSERT INTO public.historical_forecast
-                    (city, date, hour, temperature, humidity, precipitation)
-                    SELECT city, date, hour, temperature, humidity, precipitation
-                    FROM public.forecast;    
-
-                    TRUNCATE TABLE public.forecast;
-                """)
-
-                for city in citys:
-                    for forecast in city['forecast']:
-                        cursor.execute("""
-                            INSERT INTO public.forecast
-                            (date, hour, city, temperature, humidity, precipitation)
-                            VALUES (%s, %s, %s, %s, %s, %s)
-                            """, (forecast['date'], forecast['hour'], city['id'], forecast['temperature'], forecast['humidity'], forecast['precipitation']))
-                connection.commit()
-
-        return 'Ok'
-
-    except Exception as e:
-        raise e
-
-def cleanup():
-    """
-        Cleans up old forecast records from the database.
-
-        Deletes forecast records older than 7 days from the 'public.forecast' table.
-
-        Returns:
-            str: String indicating the success of the cleanup operation.
-    """
-    try:
-        with psy.connect(cons.CONNECTION_STRING) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    DELETE FROM public.forecast
-                    WHERE CURRENT_DATE - date > 7;
-                """)
-                    
-                connection.commit()
-
-        return "Clean up successful!"
+            except Exception as e:
+                raise e
+            
+        return generate_json(data, task, filename)
     
+    else:
+
+        print("Getting TRAFFIC information!")
+
+        for route in data:
+            url_call = "https://api.tomtom.com/routing/1/calculateRoute/{},{}/{}:{},{}/json?key={}".format(    
+                route['origin_lat'], 
+                route['origin_lon'],
+                route['dest_lat'], 
+                route['dest_lon'],
+                cons.API_KEY
+            )
+
+            try:
+                route['info'] = get(url_call).json()['routes'][0]["summary"]
+
+            except Exception as e:
+                print(f"Error getting info for route {route['id']}")
+                print(e)
+                pass
+
+        return generate_json(data, task, filename)
+
+def generate_json(data: list, task: str, filename: str):
+    print("Generating TRAFFIC .json!")
+
+    with open(f"/tmp/{filename}", 'w') as f:
+        f.write('\n'.join(json.dumps(row) for row in data))
+
+    return upload_json(filename, task)
+
+def upload_json(filename: str, task: str):
+    print("Uploading .json file to GCS!")
+
+    try:
+        client = storage.Client()
+        bucket = client.bucket(cons.BUCKET_NAME)
+        blob = bucket.blob(f"{task}/{filename}")
+        blob.upload_from_filename(f"/tmp/{filename}")
     except Exception as e:
-        print(e)
         raise e
+    
+    return "File .json uploaded successfully"
 
 def forecast(request):
-    """
-        Acts as an entry point for fetching forecast-related information.
-        Determines the type of request and triggers the appropriate actions.
-
-        Parameters:
-            request (str): Type of request, should be 'get_forecast'.
-
-        Returns:
-            - If the request is 'get_forecast', it returns the forecast information.
-            - Otherwise, it returns 'Invalid request!'.
-    """
     request_json = request.get_json(silent=True)
-    task = request_json['task']
 
-    if task == 'get_forecast':
-        return get_citys()
-    elif task == 'cleanup':
-        return cleanup()
-    else:
-        return 'Invalid request!'
+    return get_data(request_json['task'], f"{request_json['task']}_{request_json['datetime']}")
