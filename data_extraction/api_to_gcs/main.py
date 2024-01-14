@@ -2,6 +2,7 @@ from requests import get
 import json
 from google.cloud import bigquery, storage
 from datetime import datetime
+import pytz
 
 import constants as cons
 
