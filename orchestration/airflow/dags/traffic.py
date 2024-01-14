@@ -13,7 +13,7 @@ schema = [
     {'name': 'trafficLengthInMeters',     'type': 'INTEGER'},				
     {'name': 'departureTime',             'type': 'TIMESTAMP'},				
     {'name': 'arrivalTime',               'type': 'TIMESTAMP'},
-    {'name': 'id',                        'type': 'INTEGER'},
+    {'name': 'id',                        'type': 'STRING'},
     {'name': 'route',                     'type': 'INTEGER'}	
     ]
 
