@@ -41,6 +41,8 @@ def call_api(data: list, task: str , filename: str):
                     } for i in range(0, 24)
                 ]
 
+                city['info']['id'] = f"C{city['id']}D{city['info']['date']}H{city['info']['hour']}"
+
             except Exception as e:
                 raise e
             
@@ -62,6 +64,7 @@ def call_api(data: list, task: str , filename: str):
             try:
                 route['info'] = get(url_call).json()['routes'][0]["summary"]
                 route['info']['id'] = datetime.fromisoformat(route['info']['departureTime'][:-6]).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
+                route['info']['route'] = route['id']
 
             except Exception as e:
                 print(f"Error getting info for route {route['id']}")
