@@ -6,8 +6,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 
 
 
-schema = [				
-        {'name': 'route',                           'type': 'INTEGER'},				
+schema = [							
         {'name': 'lengthInMeters',              'type': 'INTEGER'},				
         {'name': 'travelTimeInSeconds',          'type': 'INTEGER'},				
         {'name': 'trafficDelayInSeconds',        'type': 'INTEGER'},				
