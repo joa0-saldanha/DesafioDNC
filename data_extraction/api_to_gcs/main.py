@@ -80,7 +80,7 @@ def generate_json(data: list, task: str, filename: str):
     print(f"Generating {task} .json!")
 
     with open(f"/tmp/{filename}", 'w') as f:
-        f.write('\n'.join(json.dumps(row) for row in [row['info'] for row in data])) if task == "forecast" else f.write('\n'.join(json.dumps(row['info']) for row in data)) 
+        f.write('\n'.join(json.dumps(row) for row in [row for row in [row['info'] for row in data]])) if task == "forecast" else f.write('\n'.join(json.dumps(row['info']) for row in data)) 
     
     
 
