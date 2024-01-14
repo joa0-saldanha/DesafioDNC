@@ -66,7 +66,7 @@ with DAG(
 
     refined = BigQueryExecuteQueryOperator(
         task_id='refined',
-        sql="sql/traffic/refined_forecast.sql",
+        sql="sql/forecast/refined_forecast.sql",
         use_legacy_sql=False
     )
 
