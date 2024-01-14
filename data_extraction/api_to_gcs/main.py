@@ -76,13 +76,13 @@ def call_api(data: list, task: str , filename: str):
                 print(e)
                 pass
 
-        return generate_json(data, task, filename)
+        return generate_json([route['info'] for route in data], task, filename)
 
 def generate_json(data: list, task: str, filename: str):
     print(f"Generating {task} .json!")
 
     with open(f"/tmp/{filename}", 'w') as f:
-        f.write('\n'.join(json.dumps(row['info']) for row in data)) 
+        f.write('\n'.join(json.dumps(row) for row in data)) 
     
     
 
