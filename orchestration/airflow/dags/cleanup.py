@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from airflow.models import DAG
-from operators.gcp_functions import CallGoogleCloudFunctionsOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 args = {
     'owner': 'data_lake',
@@ -28,22 +28,16 @@ with DAG(
         is_paused_upon_creation=True
 ) as dag:
 
-    forecast_cleanup = CallGoogleCloudFunctionsOperator(
-        task_id='forecast_cleanup',
-        function_name='forecast',
-        function_params={
-            "task": "cleanup"
-        },
-        response_type='text'
+    clean_historical_traffic = BigQueryExecuteQueryOperator(
+        task_id='clean_historical_traffic',
+        sql="sql/traffic/clean_historical_traffic.sql",
+        use_legacy_sql=False
     )
 
-    traffic_cleanup = CallGoogleCloudFunctionsOperator(
-        task_id='traffic_cleanup',
-        function_name='traffic',
-        function_params={
-            "task": "cleanup"
-        },
-        response_type='text'
+    clean_historical_forecast = BigQueryExecuteQueryOperator(
+        task_id='clean_historical_forecast',
+        sql="sql/forecast/clean_historical_forecast.sql",
+        use_legacy_sql=False
     )
 
-    forecast_cleanup >> traffic_cleanup
+    clean_historical_traffic >> clean_historical_forecast

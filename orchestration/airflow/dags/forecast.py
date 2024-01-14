@@ -1,19 +1,15 @@
 from datetime import datetime, timedelta
+import json
 
 from airflow.models import DAG
 from operators.gcp_functions import CallGoogleCloudFunctionsOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 
-schema = [						
-        {'name': 'date',            'type': 'DATE'},				
-        {'name': 'hour',            'type': 'TIME'},				
-        {'name': 'temperature',     'type': 'FLOAT64'},				
-        {'name': 'humidity',        'type': 'INTEGER'},				
-        {'name': 'precipitation',   'type': 'FLOAT64'},
-        {'name': 'id',              'type': 'STRING'},	
-        {'name': 'city',            'type': 'INTEGER'}	
-    ]
+with open("/home/airflow/gcs/data/schemas/forecast.json") as file:
+    schema = json.load(file)
+
 
 args = {
     'owner': 'data_lake',
@@ -50,6 +46,12 @@ with DAG(
         response_type='text'
     )
 
+    data_to_historical = BigQueryExecuteQueryOperator(
+        task_id='data_to_historical',
+        sql="sql/forecast/historical_forecast.sql",
+        use_legacy_sql=False
+    )
+
     json_to_table = GCSToBigQueryOperator(
         task_id='json_to_table',
         bucket="dnc-forecast-traffic-data",
@@ -62,4 +64,10 @@ with DAG(
         ignore_unknown_values=True
     )
 
-    call_function >> json_to_table
+    refined = BigQueryExecuteQueryOperator(
+        task_id='refined',
+        sql="sql/forecast/refined_forecast.sql",
+        use_legacy_sql=False
+    )
+
+    call_function >> data_to_historical >> json_to_table >> refined
