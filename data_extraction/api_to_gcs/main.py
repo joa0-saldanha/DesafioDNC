@@ -33,8 +33,8 @@ def call_api(data: list, task: str , filename: str):
 
                 city['info'] = [
                     {
-                        "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
-                        "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
+                        "date": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date()),
+                        "hour": str(datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time()),
                         "temperature": forecast['hourly']['temperature_2m'][i],
                         "humidity": forecast['hourly']['relative_humidity_2m'][i],
                         "precipitation": forecast['hourly']['precipitation'][i]
