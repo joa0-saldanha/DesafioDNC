@@ -26,7 +26,7 @@ Orquestrador de fluxos de trabalho para programar e monitorar a execução das t
 **traffic.py:** DAG para obtenção e armazenamento de dados de trânsito.
 
 ***- Cloud Build***<br>
-A configuração do **Cloud Build** é definida nos arquivos *cloudbuild.yaml* na raiz do projeto. Este arquivo contém as etapas do pipeline **CI/CD**.
+A configuração do **Cloud Build** é definida nos TRIGGERS, executando os passos especificados nos arquivos *cloudbuild.yaml* na raiz do projeto. Este arquivo contém as etapas do pipeline **CI/CD**.
 
 ## Configuração
 
