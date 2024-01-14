@@ -4,16 +4,14 @@ steps:
   - gcloud
   - functions
   - deploy
-  - forecast
+  - api-to-gcs
   - --region=us-central1
-  - --entry-point=forecast
-  - --source=./data_extraction/forecast
+  - --entry-point=api_to_gcs
+  - --source=./data_extraction/api_to_gcs
   - --trigger-http
   - --runtime=python39
   - --timeout=540s
   - --memory=2Gi
-  - --set-secrets=DB_HOSTNAME=DB_HOSTNAME:latest
-  - --set-secrets=DB_USERNAME=DB_USERNAME:latest
-  - --set-secrets=DB_PASSWORD=DB_PASSWORD:latest
+  - --set-secrets=API_KEY=API_KEY:latest
 options:
   logging: 'CLOUD_LOGGING_ONLY'
