@@ -8,7 +8,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 
-with open(os.path.join(os.path.dirname(__file__), 'data', 'schemas', 'forecast.json'), "r") as file:
+with open("../data/schemas/forecast.json") as file:
     schema = json.load(file)
 
 

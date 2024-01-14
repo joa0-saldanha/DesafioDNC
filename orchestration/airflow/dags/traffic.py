@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import os
 import json
 
 from airflow.models import DAG
@@ -8,7 +7,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 
-with open(os.path.join(os.path.dirname(__file__), 'data', 'schemas', 'traffic.json'), "r") as file:
+with open("../data/schemas/traffic.json") as file:
     schema = json.load(file)
 
 args = {
