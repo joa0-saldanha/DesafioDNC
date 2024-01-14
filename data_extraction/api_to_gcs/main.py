@@ -33,11 +33,11 @@ def call_api(data, task, filename):
     if task == "forecast":
         for city in data:
             process_forecast(city)
-        generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
+        return generate_json(list(chain.from_iterable([item['info'] for item in data])), task, filename)
     elif task == "traffic":
         for route in data:
             process_traffic(route)
-        generate_json([route['info'] for route in data], task, filename)
+        return generate_json([route['info'] for route in data], task, filename)
 
 def process_forecast(city):
     """Processa os dados de previsão do tempo para uma cidade."""
