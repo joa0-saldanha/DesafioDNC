@@ -3,7 +3,7 @@
 Pipeline de Extração e Armazenamento de Dados Meteorológicos e de Trânsito
 
 ## Descrição
-Este projeto consiste em uma pipeline para a extração de dados **meteorológicos** e de **trânsito** de fontes externas, processamento desses dados e armazenamento em um banco de dados hospedado no ***BigQuery***. As informações meteorológicas são obtidas da [***Open-Meteo API***](https://open-meteo.com/en/docs), enquanto as informações de trânsito são adquiridas através da [***TomTom API***](https://developer.tomtom.com/routing-api/documentation/routing/routing-service). A execução da pipeline é orquestrada usando o ***Apache Airflow*** no [***Google Cloud Platform (GCP)***](https://cloud.google.com/?hl=pt_br). As funções responsáveis pela extração de dados estão hospedadas no ***Google Cloud Functions***.
+Este projeto consiste em uma pipeline para a extração de dados **meteorológicos** e de **trânsito** de fontes externas, processamento desses dados e armazenamento em um banco de dados hospedado no ***BigQuery***, e também para geração de [***GRÁFICOS***](https://docs.google.com/spreadsheets/d/1Usr2-kDk-96gmttQ7C3WRi62HZ4V9thorYlSZstdIZ0/edit?usp=sharing). As informações meteorológicas são obtidas da [***Open-Meteo API***](https://open-meteo.com/en/docs), enquanto as informações de trânsito são adquiridas através da [***TomTom API***](https://developer.tomtom.com/routing-api/documentation/routing/routing-service). A execução da pipeline é orquestrada usando o ***Apache Airflow*** no [***Google Cloud Platform (GCP)***](https://cloud.google.com/?hl=pt_br). As funções responsáveis pela extração de dados estão hospedadas no ***Google Cloud Functions***.
 
 ### • Componentes do Projeto
 
@@ -22,11 +22,17 @@ Armazém de dados para armazenar informações de previsão do tempo e tráfego.
 Orquestrador de fluxos de trabalho para programar e monitorar a execução das tarefas.
 
 - DAGs (Directed Acyclic Graphs):<br><br>
-**forecast.py:** DAG para obtenção e armazenamento de dados meteorológicos;<br>
-**traffic.py:** DAG para obtenção e armazenamento de dados de trânsito.
+**forecast.py:** DAG para obtenção e armazenamento de dados meteorológicos.<br>
+**traffic.py:** DAG para obtenção e armazenamento de dados de trânsito;
 
 ***- Cloud Build***<br>
 A configuração do **Cloud Build** é definida nos TRIGGERS, executando os passos especificados nos arquivos *cloudbuild.yaml* na raiz do projeto. Este arquivo contém as etapas do pipeline **CI/CD**.
+
+***- Secret Manager***<br>
+No GCP Secret Manager foram configurados segredos com informações sensíveis para serem utilizados com segurança no deploy da solução.
+
+***- Google Sheets***<br>
+A configuração do **Google Sheets** é definida no UI da plataforma, consumindo os dados das tabelas no **BigQuery** de hora em hora e consequentemente atualizando os gráficos.
 
 ## Configuração
 
@@ -53,6 +59,11 @@ A função Python **API-TO-GCS** esta hospedada no ***Google Cloud Functions***.
 ### • Configuração do Apache Airflow:
 
 Certifique-se de que o **Apache Airflow** esteja configurado e as **DAGs** estejam no diretório apropriado.<br>
+
+### • Configuração do Google Sheets:
+
+Certifique-se de que o **Apache Airflow** esteja configurado e as **DAGs** estejam no diretório apropriado.<br>
+
 
 ## Uso: ##
 
