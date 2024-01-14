@@ -2,6 +2,20 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 from operators.gcp_functions import CallGoogleCloudFunctionsOperator
+from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+
+
+
+schema = [							
+    {'name': 'lengthInMeters',            'type': 'INTEGER'},				
+    {'name': 'travelTimeInSeconds',       'type': 'INTEGER'},				
+    {'name': 'trafficDelayInSeconds',     'type': 'INTEGER'},				
+    {'name': 'trafficLengthInMeters',     'type': 'INTEGER'},				
+    {'name': 'departureTime',             'type': 'TIMESTAMP'},				
+    {'name': 'arrivalTime',               'type': 'TIMESTAMP'},
+    {'name': 'id',                        'type': 'STRING'},
+    {'name': 'route',                     'type': 'INTEGER'}	
+    ]
 
 args = {
     'owner': 'data_lake',
@@ -28,13 +42,26 @@ with DAG(
         is_paused_upon_creation=True
 ) as dag:
 
-    traffic_data = CallGoogleCloudFunctionsOperator(
-        task_id='traffic_data',
-        function_name='traffic',
+    call_function = CallGoogleCloudFunctionsOperator(
+        task_id='call_function',
+        function_name='api-to-gcs',
         function_params={
-            "task": "get_traffic"
+            "task": "traffic",
+            "datetime": "{{ data_interval_end | ts_nodash }}"
         },
         response_type='text'
     )
 
-    traffic_data
+    json_to_table = GCSToBigQueryOperator(
+        task_id='json_to_table',
+        bucket="dnc-forecast-traffic-data",
+        source_objects="{{ ti.xcom_pull(task_ids='call_function') }}",
+        destination_project_dataset_table="estudos-410923.DNC.traffic",
+        source_format='NEWLINE_DELIMITED_JSON',
+        schema_fields=schema,
+        write_disposition='WRITE_TRUNCATE',
+        create_disposition='CREATE_IF_NEEDED', 
+        ignore_unknown_values=True
+    )
+
+    call_function >> json_to_table
