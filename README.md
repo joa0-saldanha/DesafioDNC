@@ -47,5 +47,5 @@ Execute as **DAGs** no **Apache Airflow** conforme a necessidade:
 
 **cleanup.py** para limpar dados históricos antigos;<br>
 **forecast.py** para obter e armazenar dados meteorológicos;<br>
-**traffic.py** para obter e armazenar dados de trânsito;<br><br>
+**traffic.py** para obter e armazenar dados de trânsito.<br><br>
 Certifique-se de configurar os agendamentos das **DAGs** de acordo com as necessidades do projeto.
