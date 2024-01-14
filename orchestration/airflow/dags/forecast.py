@@ -9,7 +9,7 @@ from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQue
 
 
 with open(os.path.join(os.path.dirname(__file__), 'data', 'schemas', 'forecast.json'), "r") as file:
-    schema_content = json.load(file)
+    schema = json.load(file)
 
 
 args = {
