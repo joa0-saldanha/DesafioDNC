@@ -82,7 +82,7 @@ def generate_json(data: list, task: str, filename: str):
     return upload_json(filename, task)
 
 def upload_json(filename: str, task: str):
-    print("Uploading .json file to GCS!")
+    print(f"Uploading {task} .json file to GCS!")
 
     try:
         client = storage.Client()
