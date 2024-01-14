@@ -79,8 +79,15 @@ def call_api(data: list, task: str , filename: str):
 def generate_json(data: list, task: str, filename: str):
     print(f"Generating {task} .json!")
 
-    with open(f"/tmp/{filename}", 'w') as f:
-        f.write('\n'.join(json.dumps(row for row in [row['info'] for row in data]))) if task == 'forecast' else f.write('\n'.join(json.dumps(row['info']) for row in data)) 
+    if task == "forecast":
+        data = [row['info'] for row in data]
+
+        with open(f"/tmp/{filename}", 'w') as f:
+            f.write('\n'.join(json.dumps(row for row in data)))
+    
+    else:
+        with open(f"/tmp/{filename}", 'w') as f:
+            f.write('\n'.join(json.dumps(row['info']) for row in data)) 
 
     return upload_json(filename, task)
 
