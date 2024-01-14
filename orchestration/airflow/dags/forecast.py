@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import os
 import json
 
 from airflow.models import DAG
