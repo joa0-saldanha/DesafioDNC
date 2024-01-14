@@ -41,7 +41,8 @@ def call_api(data: list, task: str , filename: str):
                     } for i in range(0, 24)
                 ]
 
-                city['info']['id'] = f"C{city['id']}D{city['info']['date']}H{city['info']['hour']}"
+                for forecast in city['info']:
+                    forecast['id'] = f"C{city['id']}D{forecast['date']}H{forecast['hour']}"
 
             except Exception as e:
                 raise e
