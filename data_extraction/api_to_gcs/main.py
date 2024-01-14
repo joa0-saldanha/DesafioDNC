@@ -87,7 +87,7 @@ def upload_json(filename: str, task: str):
     except Exception as e:
         raise e
     
-    return "File .json uploaded successfully"
+    return f"{task}/{filename}"
 
 def api_to_gcs(request):
     request_json = request.get_json(silent=True)
