@@ -31,7 +31,7 @@ def call_api(data: list, task: str , filename: str):
             try:
                 forecast = get(url_call).json()
 
-                city['forecast'] = [
+                city['info'] = [
                     {
                         "date": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').date(),
                         "hour": datetime.strptime(forecast['hourly']['time'][i], '%Y-%m-%dT%H:%M').time(),
@@ -71,7 +71,7 @@ def call_api(data: list, task: str , filename: str):
         return generate_json(data, task, filename)
 
 def generate_json(data: list, task: str, filename: str):
-    print("Generating TRAFFIC .json!")
+    print(f"Generating {task} .json!")
 
     with open(f"/tmp/{filename}", 'w') as f:
         f.write('\n'.join(json.dumps(row['info']) for row in data))
