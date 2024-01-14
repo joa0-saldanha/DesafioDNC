@@ -64,6 +64,8 @@ def call_api(data: list, task: str , filename: str):
 
             try:
                 route['info'] = get(url_call).json()['routes'][0]["summary"]
+                route['info']['departureTime'] = route['info']['departureTime'][:-6]
+                route['info']['arrivalTime'] = route['info']['arrivalTime'][:-6]
                 route['info']['id'] = datetime.fromisoformat(route['info']['departureTime'][:-6]).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
                 route['info']['route'] = route['route_id']
 
