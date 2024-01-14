@@ -57,7 +57,7 @@ def generate_forecast_info(forecast, city):
             "temperature": forecast['hourly']['temperature_2m'][i],
             "humidity": forecast['hourly']['relative_humidity_2m'][i],
             "precipitation": forecast['hourly']['precipitation'][i],
-            "id": f"C{city['id']}D{forecast['hourly']['time'][i]}H{forecast['hourly']['time'][i]}",
+            "id": f"C{city['id']}D{forecast['hourly']['time'][i].replace("-","").replace(":","").replace("T","H")[:-2]}",
             "city": city['id'],
         } for i in range(0, 24)
     ]
