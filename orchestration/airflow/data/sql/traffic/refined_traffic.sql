@@ -1,12 +1,11 @@
-CREATE OR REPLACE TABLE `estudos-410923.refined_DNC.refined_traffic`
+CREATE OR REPLACE TABLE refined_DNC.refined_traffic
 AS
 SELECT 
-  o.name                                        as origin,
-  d.name                                        as destination,
-  CAST(t.lengthInMeters/1000 AS INTEGER)        as distanceKM,
-  CAST(t.travelTimeInSeconds/60 AS INTEGER)     as distanceMinutes,
-  CAST(t.trafficLengthInMeters/1000 AS INTEGER)      as trafficDelayKM,
-  CAST(t.trafficDelayInSeconds/60 AS INTEGER)   as trafficDelayMinutes
+  CONCAT(o.name, " - ", d.name)                     as route,
+  CAST(t.lengthInMeters/1000 AS INTEGER)            as distanceKM,
+  CAST(t.travelTimeInSeconds/60 AS INTEGER)         as distanceMinutes,
+  CAST(t.trafficLengthInMeters/1000 AS INTEGER)     as trafficDelayKM,
+  CAST(t.trafficDelayInSeconds/60 AS INTEGER)       as trafficDelayMinutes
 FROM DNC.traffic t
 LEFT JOIN DNC.route r
   ON t.route = r.id
