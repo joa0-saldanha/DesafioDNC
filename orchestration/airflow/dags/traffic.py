@@ -57,7 +57,7 @@ with DAG(
         source_objects="{{ ti.xcom_pull(task_ids='call_function') }}",
         destination_project_dataset_table="estudos-410923.DNC.traffic",
         source_format='NEWLINE_DELIMITED_JSON',
-        schema_fields="schemas/traffic.json",
+        schema_fields=schema,
         write_disposition='WRITE_TRUNCATE',
         create_disposition='CREATE_IF_NEEDED', 
         ignore_unknown_values=True
