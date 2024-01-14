@@ -81,7 +81,7 @@ def generate_traffic_info(response, route):
     summary = response['routes'][0]["summary"]
     summary['departureTime'] = summary['departureTime'][:-6]
     summary['arrivalTime'] = summary['arrivalTime'][:-6]
-    summary['id'] = datetime.fromisoformat(summary['departureTime']).replace(tzinfo=pytz.utc).strftime('%y%m%d%H%M')
+    summary['id'] = f"R{route['route_id']}D{datetime.fromisoformat(summary['departureTime']).replace(tzinfo=pytz.utc).strftime('%y%m%dH%H%M')}"
     summary['route'] = route['route_id']
     return summary
 
