@@ -1,11 +1,24 @@
-import os
+BUCKET_NAME = "dnc-forecast-traffic-data"
 
-DB_HOSTNAME = os.environ.get('DB_HOSTNAME')
-DB_USERNAME = os.environ.get('DB_USERNAME')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
+CITYS_QUERY = """SELECT 
+                    id, 
+                    latitude as lat, 
+                    longitude as lon
+                FROM DNC.city"""
 
-CONNECTION_STRING = f"host={DB_HOSTNAME} user={DB_USERNAME} password={DB_PASSWORD} dbname={DB_USERNAME}"
-
+ROUTES_QUERY = """
+        SELECT
+            r.id AS route_id,
+            o.latitude AS origin_lat,
+            o.longitude AS origin_lon,
+            d.latitude AS dest_lat,
+            d.longitude AS dest_lon
+        FROM DNC.route r
+        LEFT JOIN DNC.city AS o 
+            ON r.origin = o.id
+        LEFT JOIN DNC.city AS d 
+            ON r.destination = d.id;
+    """
 
 COORDINATES_URL = f"https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name="
 FORECAST_URL = f"https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,relative_humidity_2m,precipitation&timezone=America%2FSao_Paulo&forecast_days=1&"
