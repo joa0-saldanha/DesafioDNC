@@ -4,6 +4,7 @@ FORECAST_URL = f"https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,re
 BUCKET_NAME = "dnc-forecast-traffic-data"
 API_KEY = os.environ.get('API_KEY')
 
+
 CITYS_QUERY = """SELECT 
                     id, 
                     latitude as lat, 
