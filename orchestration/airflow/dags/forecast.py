@@ -5,14 +5,14 @@ from operators.gcp_functions import CallGoogleCloudFunctionsOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 
 
-schema = [			
-        {'name': 'city',            'type': 'INTEGER'},				
+schema = [						
         {'name': 'date',            'type': 'DATE'},				
         {'name': 'hour',            'type': 'TIME'},				
         {'name': 'temperature',     'type': 'FLOAT64'},				
-        {'name': 'humidity',        'type': 'FLOAT64'},				
+        {'name': 'humidity',        'type': 'INTEGER'},				
         {'name': 'precipitation',   'type': 'FLOAT64'},
-        {'name': 'id',              'type': 'STRING'}	
+        {'name': 'id',              'type': 'STRING'},	
+        {'name': 'city',            'type': 'INTEGER'}	
     ]
 
 args = {
