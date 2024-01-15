@@ -16,7 +16,11 @@ Funções para chamar APIs de previsão do tempo e tráfego, processar dados e e
 Armazenamento de arquivos ***JSON*** gerados pela extração de dados.
 
 ***- Google BigQuery:***<br>
-Armazém de dados para armazenar informações de previsão do tempo e tráfego.
+Armazém de dados para armazenar informações de previsão do tempo e tráfego.<br>
+ - Esquema do Banco de dados:
+  <img src="https://github.com/joa0-saldanha/DesafioDNC/assets/80000631/cb4c66e4-4a33-456e-9a58-01bd0184bfd5"  width="700" height="500">
+
+
 
 ***- Apache Airflow:***<br>
 Orquestrador de fluxos de trabalho para programar e monitorar a execução das tarefas.
