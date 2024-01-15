@@ -67,7 +67,7 @@ Certifique-se de que o **Apache Airflow** esteja configurado e as **DAGs** estej
 
 ### • Configuração do Google Sheets:
 
-Certifique-se de que o **Apache Airflow** esteja configurado e as **DAGs** estejam no diretório apropriado.<br>
+Certifique-se de conectar apropriadamente os dados do **BigQuery** ao **Google Sheets** para a geração e atualização dos gráficos.<br>
 
 
 ## Uso: ##
