@@ -18,7 +18,6 @@ Armazenamento de arquivos ***JSON*** gerados pela extração de dados.
 ***- Google BigQuery:***<br>
 Armazém de dados para armazenar informações de previsão do tempo e tráfego.<br>
  - Esquema do Banco de dados:
- - 
   <img src="https://github.com/joa0-saldanha/DesafioDNC/assets/80000631/e83f74c3-6f58-40d0-aa09-aa11f3a4e6a8"  width="700" height="500">
 
 
