@@ -5,7 +5,7 @@ Pipeline de Extração e Armazenamento de Dados Meteorológicos e de Trânsito
 ## Descrição
 Este projeto consiste em uma pipeline para a extração de dados **meteorológicos** e de **trânsito** de fontes externas, processamento desses dados e armazenamento em um banco de dados hospedado no ***BigQuery***, e também para geração de [***GRÁFICOS***](https://docs.google.com/spreadsheets/d/1Usr2-kDk-96gmttQ7C3WRi62HZ4V9thorYlSZstdIZ0/edit?usp=sharing). As informações meteorológicas são obtidas da [***Open-Meteo API***](https://open-meteo.com/en/docs), enquanto as informações de trânsito são adquiridas através da [***TomTom API***](https://developer.tomtom.com/routing-api/documentation/routing/routing-service). A execução da pipeline é orquestrada usando o ***Apache Airflow*** no [***Google Cloud Platform (GCP)***](https://cloud.google.com/?hl=pt_br). As funções responsáveis pela extração de dados estão hospedadas no ***Google Cloud Functions***.
 
-### • Componentes do Projeto
+## • Componentes do Projeto
 
 ***- Google Cloud Functions:***<br>
 Funções para chamar APIs de previsão do tempo e tráfego, processar dados e enviar para o Cloud Storage.
