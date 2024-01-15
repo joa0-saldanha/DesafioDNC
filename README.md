@@ -26,8 +26,9 @@ Armazém de dados para armazenar informações de previsão do tempo e tráfego.
 Orquestrador de fluxos de trabalho para programar e monitorar a execução das tarefas.
 
 - DAGs (Directed Acyclic Graphs):<br><br>
-**forecast.py:** DAG para obtenção e armazenamento de dados meteorológicos.<br>
-**traffic.py:** DAG para obtenção e armazenamento de dados de trânsito;
+**forecast.py:** DAG para obtenção e armazenamento de dados meteorológicos;<br>
+**traffic.py:** DAG para obtenção e armazenamento de dados de trânsito;<br>
+**cleanup.py:** DAG para limpeza das tabelas históricas.
 
 ***- Cloud Build***<br>
 A configuração do **Cloud Build** é definida nos TRIGGERS, executando os passos especificados nos arquivos *cloudbuild.yaml* na raiz do projeto. Este arquivo contém as etapas do pipeline **CI/CD**.
