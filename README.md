@@ -81,4 +81,4 @@ Certifique-se de configurar os agendamentos das **DAGs** de acordo com as necess
 • [**Gráficos**](https://docs.google.com/spreadsheets/d/1Usr2-kDk-96gmttQ7C3WRi62HZ4V9thorYlSZstdIZ0/edit?usp=sharing);<br>
 • [**Esquema database**](https://drawsql.app/teams/myself-207/diagrams/dncchallenge);<br>
 • [**Open-Meteo API**](https://open-meteo.com/en/docs);<br>
-• [**TomTom API**](https://developer.tomtom.com/routing-api/documentation/routing/routing-service)<br>.
+• [**TomTom API**](https://developer.tomtom.com/routing-api/documentation/routing/routing-service).
